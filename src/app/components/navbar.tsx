@@ -3,7 +3,7 @@ import {Nav, Navbar, NavItem} from "react-bootstrap";
 
 export class AppNavbar extends React.Component<undefined, undefined>{
     render(){
-        return <Navbar inverse fixedTop collapseOnSelect>
+        return <Navbar id="dragarea" inverse fixedTop collapseOnSelect>
             <Navbar.Header>
                 <Navbar.Brand>
                     <a href="#">OrpheuShare</a>
