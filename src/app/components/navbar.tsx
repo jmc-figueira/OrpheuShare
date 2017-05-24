@@ -10,7 +10,7 @@ export class AppNavbar extends React.Component<undefined, undefined>{
                 </Navbar.Brand>
             </Navbar.Header>
             <Navbar.Collapse>
-                <Nav>
+                <Nav pullRight>
                     <NavItem eventKey={1} href="#">Log Out</NavItem>
                 </Nav>
             </Navbar.Collapse>

@@ -5,14 +5,37 @@ export interface ListenerList{
     listeners: string[]
 }
 
-export class NearbyListView extends React.Component<ListenerList, undefined>{
+class NearbyListView extends React.Component<ListenerList, undefined>{
     render(){
         return <ListGroup>
             {this.props.listeners.map(NearbyListView.renderItem)}
         </ListGroup>
     }
 
-    static renderItem(listener: string){
+    private static renderItem(listener: string){
         return <ListGroupItem>{listener}</ListGroupItem>
     }
+}
+
+export class NearbyListDelegate{
+    private listeners: ListenerList;
+
+    constructor(){
+        this.listeners = NearbyListDelegate.getCurrentListeners();
+    }
+
+    private static getCurrentListeners(): ListenerList{
+        let newListeners: ListenerList = {listeners: ['Hello', 'World!']};
+
+        /*$.ajax({
+
+        });*/
+
+        return newListeners;
+    }
+
+    renderView(){
+        return <NearbyListView listeners={this.listeners.listeners}/>;
+    }
+
 }

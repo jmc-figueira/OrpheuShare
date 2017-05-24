@@ -32,6 +32,7 @@ module.exports = {
     externals: {
         "react": "React",
         "react-dom": "ReactDOM",
-        "react-bootstrap": "ReactBootstrap"
+        "react-bootstrap": "ReactBootstrap",
+        "jquery": "jQuery"
     },
 };

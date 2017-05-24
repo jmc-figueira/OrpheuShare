@@ -2,3 +2,7 @@
     -webkit-user-select: none;
     -webkit-app-region: drag;
 }
+
+body{
+    padding-top: 70px;
+}
