@@ -65,7 +65,7 @@ class NearbyListDelegate{
     private updateListeners(){
         $.ajax({
             type: "GET",
-            url: "http://localhost:8080/rest/v1/now",
+            url: "https://orpheushare.appspot.com/rest/v1/now",
             contentType: "application/json; charset=utf-8",
             crossDomain: true,
             success: this.serverSuccess.bind(this),
