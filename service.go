@@ -17,6 +17,7 @@ func init(){
   router.HandleFunc("/rest/v1/now", getNowListening).Methods("GET")
   router.HandleFunc("/rest/v1/listen", newListen).Methods("POST")
   router.HandleFunc("/rest/v1/register", registerUser).Methods("POST")
+  router.HandleFunc("/rest/v1/login", login).Methods("GET")
 
   http.Handle("/", router)
 }
@@ -94,4 +95,18 @@ func registerUser(w http.ResponseWriter, r *http.Request){
     http.Error(w, err.Error(), 500)
   }
 
+}
+
+func login(w http.ResponseWriter, r *http.Request){
+  ctx := appengine.NewContext(r)
+
+  err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
+    queryParams := r.URL.Query()
+
+    
+  }, nil)
+
+  if err != nil{
+    http.Error(w, err.Error(), 500)
+  }
 }

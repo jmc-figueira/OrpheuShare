@@ -12,11 +12,12 @@ const (
 )
 
 type User struct{
-  email string
-  username string
-  realName string
-  hashedPass []byte
-  accountTokens []string
+  Email string
+  Username string
+  RealName string
+  Salt []byte
+  HashedPass []byte
+  AccountTokens []string
 }
 
 type JsonUser struct{
@@ -38,5 +39,9 @@ func NewUser(user JsonUser) (*User, error){
     return nil, err
   }
 
-  return &User{email: user.Email, username: user.Username, realName: user.RealName, hashedPass: hash, accountTokens: nil}, nil
+  return &User{Email: user.Email, Username: user.Username, RealName: user.RealName, Salt: salt, HashedPass: hash, AccountTokens: nil}, nil
+}
+
+func CalcHash(password string) []byte{
+
 }
