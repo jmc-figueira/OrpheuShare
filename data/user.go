@@ -14,20 +14,29 @@ const (
 type User struct{
   email string
   username string
+  realName string
   hashedPass []byte
+  accountTokens []string
 }
 
-func NewUser(email string, username string, password string) (*User, error){
+type JsonUser struct{
+  Email string
+  Username string
+  RealName string
+  Password string
+}
+
+func NewUser(user JsonUser) (*User, error){
   salt := make([]byte, SALT_BYTES)
   _, err := io.ReadFull(rand.Reader, salt)
   if err != nil{
     return nil, err
   }
 
-  hash, err := scrypt.Key([]byte(password), salt, 1<<14, 8, 1, HASH_BYTES)
+  hash, err := scrypt.Key([]byte(user.Password), salt, 1<<14, 8, 1, HASH_BYTES)
   if err != nil{
     return nil, err
   }
 
-  return &User{email: email, username: username, hashedPass: hash}, nil
+  return &User{email: user.Email, username: user.Username, realName: user.RealName, hashedPass: hash, accountTokens: nil}, nil
 }

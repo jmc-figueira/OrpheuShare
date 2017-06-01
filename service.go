@@ -16,6 +16,7 @@ func init(){
 
   router.HandleFunc("/rest/v1/now", getNowListening).Methods("GET")
   router.HandleFunc("/rest/v1/listen", newListen).Methods("POST")
+  router.HandleFunc("/rest/v1/register", registerUser).Methods("POST")
 
   http.Handle("/", router)
 }
@@ -51,6 +52,40 @@ func newListen(w http.ResponseWriter, r *http.Request){
     key := datastore.NewIncompleteKey(ctx, "Listen", nil)
 
     _, err := datastore.Put(ctx, key, testListen)
+
+    return err
+  }, nil)
+
+  if err != nil{
+    http.Error(w, err.Error(), 500)
+  }
+
+}
+
+func registerUser(w http.ResponseWriter, r *http.Request){
+  ctx := appengine.NewContext(r)
+
+  err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
+
+    decoder := json.NewDecoder(r.Body)
+
+    var newUser data.JsonUser
+
+    dec_err := decoder.Decode(&newUser)
+
+    if dec_err != nil{
+      http.Error(w, dec_err.Error(), 400)
+    }
+
+    user, u_err := data.NewUser(newUser)
+
+    if u_err != nil{
+      http.Error(w, u_err.Error(), 500)
+    }
+
+    key := datastore.NewIncompleteKey(ctx, "User", nil)
+
+    _, err := datastore.Put(ctx, key, user)
 
     return err
   }, nil)
