@@ -8,17 +8,8 @@ import (
   "google.golang.org/appengine"
   "google.golang.org/appengine/datastore"
   "encoding/json"
+  "data"
 )
-
-type User struct{
-
-}
-
-type Listen struct{
-  Username string
-  TrackName string
-  TrackID string
-}
 
 func init(){
   router := mux.NewRouter()
@@ -34,7 +25,7 @@ func getNowListening(w http.ResponseWriter, r *http.Request){
 
   query := datastore.NewQuery("Listen")
 
-  var listeners []Listen
+  var listeners []data.Listen
 
   if _, get_err := query.GetAll(ctx, &listeners); get_err != nil{
     http.Error(w, get_err.Error(), 500)
@@ -52,7 +43,7 @@ func newListen(w http.ResponseWriter, r *http.Request){
   ctx := appengine.NewContext(r)
 
   err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
-    testListen := new(Listen)
+    testListen := new(data.Listen)
     testListen.Username = "Test"
     testListen.TrackName = "Hardstyle Classics"
     testListen.TrackID = "0"
