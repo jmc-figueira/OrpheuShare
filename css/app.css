@@ -6,3 +6,12 @@
 body{
     padding-top: 50px;
 }
+
+.navbar{
+    margin-bottom: 0;
+}
+
+.jumbotron{
+    margin-bottom: 0;
+    height: calc(100vh - 50px);
+}

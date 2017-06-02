@@ -5,6 +5,7 @@ export class AppNavbar extends React.Component<undefined, undefined>{
     render(){
         return <Navbar id="dragarea" inverse fixedTop collapseOnSelect>
             <Navbar.Header>
+                <Navbar.Toggle/>
                 <Navbar.Brand>
                     <a href="#">OrpheuShare</a>
                 </Navbar.Brand>
