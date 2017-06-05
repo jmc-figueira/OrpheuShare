@@ -9,7 +9,8 @@ app.on('ready', function(){
         height: 720,
         useContentSize: true,
         resizable: true,
-        titleBarStyle: 'hidden-inset'
+        titleBarStyle: 'hidden-inset',
+        devTools: false
     });
 
     win.setMenu(null);
