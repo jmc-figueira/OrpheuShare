@@ -33,6 +33,8 @@ module.exports = {
         "react": "React",
         "react-dom": "ReactDOM",
         "react-bootstrap": "ReactBootstrap",
+        "react-redux": "ReactRedux",
+        "redux": "Redux",
         "jquery": "jQuery"
     },
 };
