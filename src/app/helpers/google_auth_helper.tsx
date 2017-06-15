@@ -7,6 +7,14 @@ export class GoogleAuthHelper{
     private static readonly CLIENT_ID: string = "683730810868-civpj04hcra5e49lljnsn6sbd81hc65t.apps.googleusercontent.com";
     private static readonly CLIENT_SECRET: string = "_T4JT1LHnZ0WXacM_CnrqSjn";
 
+    private ACCESS_TOKEN: string;
+    private REFRESH_TOKEN: string;
+
+    constructor(){
+        this.ACCESS_TOKEN = localStorage.getItem("@OrpheuShare:AccessToken");
+        this.REFRESH_TOKEN = localStorage.getItem("@OrpheuShare:RefreshToken");
+    }
+
     public static googleSignIn(){
         let authWindow = new remote.BrowserWindow({
             parent: remote.getCurrentWindow(),
