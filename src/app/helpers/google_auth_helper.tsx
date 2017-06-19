@@ -2,7 +2,7 @@ import {remote} from "electron";
 
 export class GoogleAuthHelper{
     private static readonly SIGN_IN_URL: string = "https://accounts.google.com/o/oauth2/v2/auth?";
-    private static readonly AUTH_URL: string = "https://www.googleapis.com/oauth2/v4/token?";
+    private static readonly AUTH_URL: string = "https://www.googleapis.com/oauth2/v4/token";
     private static readonly USER_INFO_URL: string = "https://www.googleapis.com/oauth2/v2/userinfo?";
     private static readonly CLIENT_ID: string = "683730810868-civpj04hcra5e49lljnsn6sbd81hc65t.apps.googleusercontent.com";
     private static readonly CLIENT_SECRET: string = "_T4JT1LHnZ0WXacM_CnrqSjn";
@@ -10,12 +10,26 @@ export class GoogleAuthHelper{
     private ACCESS_TOKEN: string;
     private REFRESH_TOKEN: string;
 
-    constructor(){
-        this.ACCESS_TOKEN = localStorage.getItem("@OrpheuShare:AccessToken");
+    private onLogin: () => void;
+
+    constructor(onLogin: () => void){
+        this.onLogin = onLogin;
+
+        if(localStorage.getItem("@OrpheuShare:AccessExpirationDate") !== null && parseInt(localStorage.getItem("@OrpheuShare:AccessExpirationDate")) > new Date().getTime()){
+            this.ACCESS_TOKEN = localStorage.getItem("@OrpheuShare:AccessToken");
+        }
         this.REFRESH_TOKEN = localStorage.getItem("@OrpheuShare:RefreshToken");
     }
 
-    public static googleSignIn(){
+    public googleSignIn(){
+        if(this.ACCESS_TOKEN){
+            this.authWithToken(this.ACCESS_TOKEN);
+            return;
+        } else if(this.REFRESH_TOKEN){
+            this.refreshToken(this.REFRESH_TOKEN);
+            return;
+        }
+
         let authWindow = new remote.BrowserWindow({
             parent: remote.getCurrentWindow(),
             modal: true,
@@ -42,13 +56,13 @@ export class GoogleAuthHelper{
 
         authWindow.on("page-title-updated", function(event, title){
             if(title.indexOf("Success code") !== -1){
-                GoogleAuthHelper.googleAuth(GoogleAuthHelper.queryToJSON(title.split("Success ")[1])["code"]);
                 authWindow.destroy();
+                this.googleAuth(GoogleAuthHelper.queryToJSON(title.split("Success ")[1])["code"]);
             }
-        });
+        }.bind(this));
     }
 
-    private static googleAuth(authCode: string){
+    private googleAuth(authCode: string){
         let payload = {
             code: authCode,
             client_id: GoogleAuthHelper.CLIENT_ID,
@@ -62,27 +76,36 @@ export class GoogleAuthHelper{
             url: GoogleAuthHelper.AUTH_URL,
             contentType: "application/x-www-form-urlencoded; charset=utf-8",
             crossDomain: true,
-            success: GoogleAuthHelper.authSuccess,
+            success: this.authSuccess.bind(this),
             data: payload
         });
     }
 
-    private static authSuccess(response){
+    private authSuccess(response){
         localStorage.setItem("@OrpheuShare:AccessToken", response.access_token);
+        localStorage.setItem("@OrpheuShare:AccessExpirationDate", (new Date().getTime() + (response.expires_in * 1000)).toString());
         localStorage.setItem("@OrpheuShare:RefreshToken", response.refresh_token);
+        
+        this.authWithToken(response.access_token);
+    }
 
+    private authWithToken(token: string){
         $.ajax({
             type: "GET",
             url: GoogleAuthHelper.USER_INFO_URL,
             headers: {
-                authorization: "Bearer " + response.access_token
+                authorization: "Bearer " + token
             },
-            success: GoogleAuthHelper.onUserSignIn
+            success: this.onUserSignIn.bind(this)
         });
     }
 
-    private static onUserSignIn(response){
-        console.log(response.name);
+    private refreshToken(token: string){
+
+    }
+
+    private onUserSignIn(response){
+        this.onLogin();
     }
 
     private static queryToJSON(query: string): object{
