@@ -15,22 +15,34 @@ class App extends React.Component<undefined, GlobalState>{
     constructor(props){
         super(props);
         this.state = {loggedIn: false};
-        this.authHelper = new GoogleAuthHelper(this.onLogin.bind(this));
+        this.authHelper = new GoogleAuthHelper(this.onLogin.bind(this), this.onLogout.bind(this));
     }
 
     componentDidMount(){
-        this.authHelper.googleSignIn();
+        this.authHelper.googleSignInWithToken();
     }
 
     render(){
         return <div>
-            <AppNavbar/>
-            {this.state.loggedIn ? <NearbyListView/> : <WelcomePage authHelper={this.authHelper}/>}
+            <AppNavbar requestLogout={this.requestLogout.bind(this)}/>
+            {this.state.loggedIn ? <NearbyListView/> : <WelcomePage requestLogin={this.requestLogin.bind(this)}/>}
         </div>;
     }
 
-    onLogin(){
+    public requestLogin(){
+        this.authHelper.googleSignInNoToken();
+    }
+
+    private onLogin(){
         this.setState({loggedIn: true});
+    }
+
+    public requestLogout(){
+        this.authHelper.logOut();
+    }
+
+    private onLogout(){
+        this.setState({loggedIn: false});
     }
 }
 

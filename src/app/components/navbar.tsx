@@ -1,7 +1,11 @@
 import * as React from "react";
 import {Nav, Navbar, NavItem} from "react-bootstrap";
 
-export class AppNavbar extends React.Component<undefined, undefined>{
+interface NavbarProps{
+    requestLogout: () => void;
+}
+
+export class AppNavbar extends React.Component<NavbarProps, undefined>{
     render(){
         return <Navbar id="dragarea" inverse fixedTop collapseOnSelect>
             <Navbar.Header>
@@ -12,7 +16,7 @@ export class AppNavbar extends React.Component<undefined, undefined>{
             </Navbar.Header>
             <Navbar.Collapse>
                 <Nav pullRight>
-                    <NavItem eventKey={1} href="#">Log Out</NavItem>
+                    <NavItem eventKey={1} href="#" onClick={this.props.requestLogout}>Log Out</NavItem>
                 </Nav>
             </Navbar.Collapse>
         </Navbar>

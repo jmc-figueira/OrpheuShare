@@ -11,9 +11,11 @@ export class GoogleAuthHelper{
     private REFRESH_TOKEN: string;
 
     private onLogin: () => void;
+    private onLogout: () => void;
 
-    constructor(onLogin: () => void){
+    constructor(onLogin: () => void, onLogout: () => void){
         this.onLogin = onLogin;
+        this.onLogout = onLogout;
 
         if(localStorage.getItem("@OrpheuShare:AccessExpirationDate") !== null && parseInt(localStorage.getItem("@OrpheuShare:AccessExpirationDate")) > new Date().getTime()){
             this.ACCESS_TOKEN = localStorage.getItem("@OrpheuShare:AccessToken");
@@ -21,45 +23,55 @@ export class GoogleAuthHelper{
         this.REFRESH_TOKEN = localStorage.getItem("@OrpheuShare:RefreshToken");
     }
 
-    public googleSignIn(){
+    public googleSignInWithToken(){
+        this.googleSignIn(false);
+    }
+
+    public googleSignInNoToken(){
+        this.googleSignIn(true);
+    }
+
+    public googleSignIn(continueIfTokenInvalid: boolean){
         if(this.ACCESS_TOKEN){
             this.authWithToken(this.ACCESS_TOKEN);
             return;
-        } else if(this.REFRESH_TOKEN){
+        } else if(this.REFRESH_TOKEN && continueIfTokenInvalid){
             this.refreshToken(this.REFRESH_TOKEN);
             return;
         }
 
-        let authWindow = new remote.BrowserWindow({
-            parent: remote.getCurrentWindow(),
-            modal: true,
-            show: false,
-            webPreferences: {
-                nodeIntegration: false,
-                sandbox: true,
-                webSecurity: false
-            }
-        });
+        if(continueIfTokenInvalid){
+            let authWindow = new remote.BrowserWindow({
+                parent: remote.getCurrentWindow(),
+                modal: true,
+                show: false,
+                webPreferences: {
+                    nodeIntegration: false,
+                    sandbox: true,
+                    webSecurity: false
+                }
+            });
 
-        let queryConstructor = new URLSearchParams();
-        queryConstructor.append("client_id", GoogleAuthHelper.CLIENT_ID);
-        queryConstructor.append("response_type", "code");
-        queryConstructor.append("scope", "openid profile email");
-        queryConstructor.append("redirect_uri", "urn:ietf:wg:oauth:2.0:oob:auto");
+            let queryConstructor = new URLSearchParams();
+            queryConstructor.append("client_id", GoogleAuthHelper.CLIENT_ID);
+            queryConstructor.append("response_type", "code");
+            queryConstructor.append("scope", "openid profile email");
+            queryConstructor.append("redirect_uri", "urn:ietf:wg:oauth:2.0:oob:auto");
 
-        authWindow.loadURL(GoogleAuthHelper.SIGN_IN_URL + queryConstructor.toString());
-        authWindow.once("ready-to-show", () => authWindow.show());
+            authWindow.loadURL(GoogleAuthHelper.SIGN_IN_URL + queryConstructor.toString());
+            authWindow.once("ready-to-show", () => authWindow.show());
 
-        authWindow.on("close", function(){
-            authWindow = null;
-        });
+            authWindow.on("close", function(){
+                authWindow = null;
+            });
 
-        authWindow.on("page-title-updated", function(event, title){
-            if(title.indexOf("Success code") !== -1){
-                authWindow.destroy();
-                this.googleAuth(GoogleAuthHelper.queryToJSON(title.split("Success ")[1])["code"]);
-            }
-        }.bind(this));
+            authWindow.on("page-title-updated", function(event, title){
+                if(title.indexOf("Success code") !== -1){
+                    authWindow.destroy();
+                    this.googleAuth(GoogleAuthHelper.queryToJSON(title.split("Success ")[1])["code"]);
+                }
+            }.bind(this));
+        }
     }
 
     private googleAuth(authCode: string){
@@ -89,6 +101,13 @@ export class GoogleAuthHelper{
         this.authWithToken(response.access_token);
     }
 
+    private refreshSuccess(response){
+        localStorage.setItem("@OrpheuShare:AccessToken", response.access_token);
+        localStorage.setItem("@OrpheuShare:AccessExpirationDate", (new Date().getTime() + (response.expires_in * 1000)).toString());
+
+        this.authWithToken(response.access_token);
+    }
+
     private authWithToken(token: string){
         $.ajax({
             type: "GET",
@@ -96,16 +115,31 @@ export class GoogleAuthHelper{
             headers: {
                 authorization: "Bearer " + token
             },
-            success: this.onUserSignIn.bind(this)
+            success: this.onLogin
         });
     }
 
     private refreshToken(token: string){
+        let payload = {
+            refresh_token: token,
+            client_id: GoogleAuthHelper.CLIENT_ID,
+            client_secret: GoogleAuthHelper.CLIENT_SECRET,
+            grant_type: "refresh_token",
+        };
 
+        $.ajax({
+            type: "POST",
+            url: GoogleAuthHelper.AUTH_URL,
+            contentType: "application/x-www-form-urlencoded; charset=utf-8",
+            crossDomain: true,
+            success: this.refreshSuccess.bind(this),
+            data: payload
+        });
     }
 
-    private onUserSignIn(response){
-        this.onLogin();
+    public logOut(){
+        localStorage.removeItem("@OrpheuShare:AccessToken");
+        this.onLogout();
     }
 
     private static queryToJSON(query: string): object{
