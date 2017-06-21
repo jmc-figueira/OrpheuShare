@@ -3,6 +3,7 @@ import {Nav, Navbar, NavItem} from "react-bootstrap";
 
 interface NavbarProps{
     requestLogout: () => void;
+    loggedIn: boolean
 }
 
 export class AppNavbar extends React.Component<NavbarProps, undefined>{
@@ -16,7 +17,7 @@ export class AppNavbar extends React.Component<NavbarProps, undefined>{
             </Navbar.Header>
             <Navbar.Collapse>
                 <Nav pullRight>
-                    <NavItem eventKey={1} href="#" onClick={this.props.requestLogout}>Log Out</NavItem>
+                    {this.props.loggedIn ? <NavItem eventKey={1} href="#" onClick={this.props.requestLogout}>Log Out</NavItem> : null}
                 </Nav>
             </Navbar.Collapse>
         </Navbar>

@@ -24,7 +24,7 @@ class App extends React.Component<undefined, GlobalState>{
 
     render(){
         return <div>
-            <AppNavbar requestLogout={this.requestLogout.bind(this)}/>
+            <AppNavbar requestLogout={this.requestLogout.bind(this)} loggedIn={this.state.loggedIn}/>
             {this.state.loggedIn ? <NearbyListView/> : <WelcomePage requestLogin={this.requestLogin.bind(this)}/>}
         </div>;
     }
