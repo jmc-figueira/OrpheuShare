@@ -35,7 +35,7 @@ export class GoogleAuthHelper{
         if(this.ACCESS_TOKEN){
             this.authWithToken(this.ACCESS_TOKEN);
             return;
-        } else if(this.REFRESH_TOKEN && continueIfTokenInvalid){
+        } else if(this.REFRESH_TOKEN){
             this.refreshToken(this.REFRESH_TOKEN);
             return;
         }
@@ -139,6 +139,8 @@ export class GoogleAuthHelper{
 
     public logOut(){
         localStorage.removeItem("@OrpheuShare:AccessToken");
+        localStorage.removeItem("@OrpheuShare:AccessExpirationDate");
+        localStorage.removeItem("@OrpheuShare:RefreshToken");
         this.onLogout();
     }
 
