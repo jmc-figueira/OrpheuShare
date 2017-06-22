@@ -1,6 +1,5 @@
 import * as React from "react";
 import {Button, Col, Jumbotron, Panel, Row} from "react-bootstrap";
-import { GoogleAuthHelper } from "../helpers/google_auth_helper";
 
 interface WelcomePageProps{
     requestLogin: () => void;
@@ -18,12 +17,7 @@ export class WelcomePage extends React.Component<WelcomePageProps, undefined>{
                         <Panel>
                             <Row>
                                 <Col xs={12}>
-                                    <Button className="btn-social btn-google" block onClick={this.props.requestLogin}><span className="fa fa-google"/>Sign in with Google</Button>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col xs={12}>
-                                    <Button className="btn-social btn-facebook" block><span className="fa fa-facebook"/>Sign in with Facebook</Button>
+                                    <Button className="btn-social btn-spotify" block onClick={this.props.requestLogin}><span className="fa fa-spotify"/>Sign in with Spotify</Button>
                                 </Col>
                             </Row>
                             <Row>

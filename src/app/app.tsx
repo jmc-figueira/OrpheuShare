@@ -3,23 +3,25 @@ import * as ReactDOM from "react-dom";
 import {AppNavbar} from "./components/navbar";
 import {WelcomePage} from "./components/welcome_page";
 import {NearbyListView} from "./components/nearby_list";
-import {GoogleAuthHelper} from "./helpers/google_auth_helper";
+import {OAuthHelper} from "./helpers/oauth_helper";
+import {SpotifyHelper} from "./helpers/spotify_helper";
+import { User } from "./helpers/basic_user";
 
 interface GlobalState{
-    loggedIn: boolean
+    loggedIn: User | false;
 }
 
 class App extends React.Component<undefined, GlobalState>{
-    private authHelper: GoogleAuthHelper;
+    private authHelper: OAuthHelper;
     
     constructor(props){
         super(props);
         this.state = {loggedIn: false};
-        this.authHelper = new GoogleAuthHelper(this.onLogin.bind(this), this.onLogout.bind(this));
+        this.authHelper = new SpotifyHelper(this.onLogin.bind(this), this.onLogout.bind(this));
     }
 
     componentDidMount(){
-        this.authHelper.googleSignInWithToken();
+        this.authHelper.signInWithToken();
     }
 
     render(){
@@ -30,11 +32,11 @@ class App extends React.Component<undefined, GlobalState>{
     }
 
     public requestLogin(){
-        this.authHelper.googleSignInNoToken();
+        this.authHelper.signInNoToken();
     }
 
-    private onLogin(){
-        this.setState({loggedIn: true});
+    private onLogin(user: User){
+        this.setState({loggedIn: user});
     }
 
     public requestLogout(){
