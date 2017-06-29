@@ -1,4 +1,4 @@
-import {User} from "./basic_user";
+import {User} from "./user";
 
 export abstract class OAuthHelper {
     protected static readonly SIGN_IN_URL: string;

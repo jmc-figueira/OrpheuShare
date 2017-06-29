@@ -2,7 +2,7 @@ import {remote} from "electron";
 import {MusicHelper} from "./music_helper";
 import {OAuthHelper} from "./oauth_helper";
 import { URLUtils } from "./url_utils";
-import { User } from "./basic_user";
+import { User } from "./user";
 
 export class SpotifyHelper extends OAuthHelper implements MusicHelper{
     protected static readonly SIGN_IN_URL: string = "https://accounts.spotify.com/authorize";
@@ -45,7 +45,7 @@ export class SpotifyHelper extends OAuthHelper implements MusicHelper{
             let query = new URLSearchParams();
             query.append("client_id", SpotifyHelper.CLIENT_ID);
             query.append("response_type", "code");
-            query.append("scope", "user-read-currently-playing user-read-private user-read-email");
+            query.append("scope", "user-read-currently-playing user-read-private user-read-email user-read-playback-state");
             query.append("redirect_uri", "http://localhost/token");
             query.append("show_dialog", "true");
             
@@ -152,19 +152,22 @@ export class SpotifyHelper extends OAuthHelper implements MusicHelper{
         super.authSuccess(user);
     }
 
-    getCurrentTrack(callback: (response: string) => void){
+    public getCurrentTrack(callback: (response) => void){
         $.ajax({
             type: "GET",
             url: SpotifyHelper.CURRENTLY_PLAYING_URL,
+            headers: {
+                authorization: "Bearer " + this.access_token
+            },
             success: callback
         });
     }
 
-    getTrackUrl(id: string, callback: (url: string) => void){
+    /*getTrackUrl(id: string, callback: (url: string) => void){
         $.ajax({
             type: "GET",
             url: "https://api.spotify.com/v1/tracks/" + id,
             success: callback
         });
-    }
+    }*/
 }

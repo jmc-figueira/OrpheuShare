@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Nav, Navbar, NavDropdown, Image, MenuItem} from "react-bootstrap";
-import { User } from "../helpers/basic_user";
+import { User } from "../helpers/user";
 
 interface NavbarProps{
     requestLogout: () => void;

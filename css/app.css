@@ -11,6 +11,21 @@ body{
     margin-bottom: 0;
 }
 
+.media-controls{
+    margin-bottom: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.center-content{
+    text-align: center;
+}
+
+.right-content{
+    text-align: right;
+}
+
 .jumbotron{
     margin-bottom: 0;
     height: calc(100vh - 50px);

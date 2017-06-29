@@ -1,3 +1,3 @@
 export interface MusicHelper{
-    getCurrentTrack(callback: (response: string) => void);
+    getCurrentTrack(callback: (response) => void);
 }
